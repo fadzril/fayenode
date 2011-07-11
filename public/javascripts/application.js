@@ -7,6 +7,7 @@ Application = {
 	init: function (bayeux) {
 		var self = this;
 		this._bayeux = bayeux;
+		this._body = $('body');
 		this._title = $('#header h1');
 		this._form = $('#user-form');
 		this._main = $('#main');
@@ -36,28 +37,38 @@ Application = {
 	
 	launch: function () {
 		var self = this;
-		this._title.text('Joining #' + this._channel);		
-		this._resize.bind('click' , self.resize);		
+		this._title.text('Joining #' + this._channel);
+		this._resize.bind('click' , self.resize);
+		this._msgbox.live('keypress', self.keypress);
 		this._bayeux.subscribe('/chat/' + this._channel, self.accept, this);
 		
 		this._form.fadeOut('fast', function () {
 		  self._fader.hide('fast');
-		  $('body').css('overflow', 'auto')
+		  self._msgbox.focus();
+		  self._body.css('overflow', 'auto');
 		});
 
 		this._post.submit(function (e) {
 		  e.preventDefault();
 		  var msg = self._msgbox.val();
 		  self.post(msg);
-		  self._msgbox.val('');
+		  self._msgbox.val('').focus();
 		});
+	},
+
+	keypress: function(e) {
+		if (e.keyCode === 13) {
+			e.preventDefault();
+			Application._post.submit();
+		}
 	},
 	
 	accept: function(message) {
 	  var self = this
 	    , content = $('<li>', { html: '<img src="'+ message.avatar +'"/><span>' + message.user + '</span>' + message.message });
-	 
-		self._stream.append( content );
+	  
+	  if (message.message == '' || message.message.match(/^\ /i)) return;
+	  self._stream.append( content );
 	},
 	
 	/** 

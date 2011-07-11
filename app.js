@@ -11,7 +11,7 @@ var express = require('express')
   , stylus = require('stylus')
   , sio = require('socket.io');
 	
-faye.Logging.logLevel = 'info'; 
+faye.Logging.logLevel = 'debug'; 
 
 var app = module.exports = express.createServer();
 
@@ -51,6 +51,12 @@ app.configure('production', function(){
 var bayeux = new faye.NodeAdapter({
     mount: '/bayeux'
   , timeout: 130
+  , engine: {
+      type: 'redis'
+    , host: '127.0.0.1'
+    , port: '6379'
+    , namespace: '/fm'
+  }
 });
 
 bayeux.attach(app);
@@ -64,7 +70,6 @@ var serverAuth = {
     if (message.channel !== '/meta/subscribe') {
       return callback(message);
     }
-
     console.log('-------------incoming start----------------');
     console.log(message);
     callback(message);
@@ -81,17 +86,10 @@ var serverAuth = {
 
 bayeux.addExtension(serverAuth);
 
-sys.puts('Listening on : ' + bayeux);
-
 
 /*******************************************
  * Routes
  ******************************************/
-
-// for (var item in bayeux) {
-//   collections.push(item);
-// };
-
 app.get('/', function(req, res){
   res.render('index', {
     title: 'Faye Chatter'
@@ -101,8 +99,6 @@ app.get('/', function(req, res){
 app.get('/dashboard', function(req, res) {
   res.render('dashboard/index');
 });
-
-// Only listen on $ node app.js
 
 if (!module.parent) {
   app.listen(3000);
