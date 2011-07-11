@@ -25,7 +25,7 @@ var Countdown = {
 
     $(container).text(left + ': from now');
     function pluralize (str, count) {
-			return str + (parseInt(count, 10) !== 1 ? 's' : '');
+      return str + (parseInt(count, 10) !== 1 ? 's' : '');
     }
   }
 };
