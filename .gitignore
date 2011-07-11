@@ -1,3 +1,10 @@
 .DS_Store
 node_modules/
 public/stylesheets/*.css
+.idea/.name
+.idea/encodings.xml
+.idea/fayenode.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml

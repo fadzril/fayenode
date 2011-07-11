@@ -4,12 +4,12 @@
  */
 
 var express = require('express')
-	,	faye = require('faye')
-	, fs = require('fs')
-	, sys = require('sys')
-	, nib = require('nib')
-	, stylus = require('stylus')
-	, sio = require('socket.io');
+  , faye = require('faye')
+  , fs = require('fs')
+  , sys = require('sys')
+  , nib = require('nib')
+  , stylus = require('stylus')
+  , sio = require('socket.io');
 	
 faye.Logging.logLevel = 'info'; 
 
@@ -31,9 +31,9 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public'));
   
   function compile (str, path) {
-  		return stylus(str)
-  			.set('filename', path)
-  			.use(nib());
+    return stylus(str)
+      .set('filename', path)
+      .use(nib());
   }
 });
 
@@ -49,8 +49,8 @@ app.configure('production', function(){
  * Faye
  ******************************************/
 var bayeux = new faye.NodeAdapter({
-		mount: '/bayeux'
-	,	timeout: 130
+    mount: '/bayeux'
+  , timeout: 130
 });
 
 bayeux.attach(app);
@@ -62,21 +62,21 @@ var collections = [];
 var serverAuth = {
   incoming: function(message, callback) {
     if (message.channel !== '/meta/subscribe') {
-      return callback(message);	
-		}
-		
-		console.log('-------------incoming start----------------');
-		console.log(message);
+      return callback(message);
+    }
+
+    console.log('-------------incoming start----------------');
+    console.log(message);
     callback(message);
-		console.log('-------------incoming end----------------');
+    console.log('-------------incoming end----------------');
   },
 
-	outgoing: function (message, callback) {
-		console.log('-------------outgoing start----------------');
-		console.log(message);
-		callback(message);
-		console.log('-------------outgoing end----------------');		
-	}
+  outgoing: function (message, callback) {
+    console.log('-------------outgoing start----------------');
+    console.log(message);
+    callback(message);
+    console.log('-------------outgoing end----------------');
+  }
 };
 
 bayeux.addExtension(serverAuth);
@@ -94,12 +94,12 @@ sys.puts('Listening on : ' + bayeux);
 
 app.get('/', function(req, res){
   res.render('index', {
-      title: 'Faye Chatter'
+    title: 'Faye Chatter'
   });
 });
 
 app.get('/dashboard', function(req, res) {
-	res.render('dashboard/index');
+  res.render('dashboard/index');
 });
 
 // Only listen on $ node app.js

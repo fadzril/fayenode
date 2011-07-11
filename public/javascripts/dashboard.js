@@ -1,248 +1,240 @@
 (function () {
 	var ActivityLog = function () {
 		var _whichMessage = 0;
-			
-		return {
-			_showMessage : function (message, type, channel) {
-				var self = this
-					,	_trow = $('<tr>')
-					,	_metadata = null;
-								
-				_whichMessage += 1;
 
-				this._logRow = function () {
-					return $('table#log tbody').prepend(_trow);
-				},
+    return {
+      _showMessage : function (message, type, channel) {
+        var self = this
+          , _trow = $('<tr>')
+          , _metadata = null;
 
-				this._showChannel = function (channel) {
-				  var _tdata = $('<td>' + channel + '</td>');
-					_trow.append(_tdata);
-				},
+        _whichMessage += 1;
 
-				this._showWhichMessage = function () {
-				  var _tdata = $('<td class="font-fixed"><b>' + _whichMessage + '</b> :' + type + '</td>');
-					_trow.append( _tdata );
-				},
+        this._logRow = function () {
+          return $('table#log tbody').prepend(_trow);
+        };
 
-				this._showJSON = function (message) {
-					var msg = JSON.stringify(message, null, 4);
-				  var _tdata = $('<td class="font-fixed">' + msg + '</td>');
-					_trow.append(_tdata);
-				}
-							
-				if (message.metadata) {
-					_metadata = message.metadata;
-					message = message.payload;
-					channel = _metadata.channel;
-				}
+        this._showChannel = function (channel) {
+          var _tdata = $('<td>' + channel + '</td>');
+          _trow.append(_tdata);
+        };
 
-				_tr = this._logRow();
-				this._showChannel(channel);
-				this._showWhichMessage();
-				this._showJSON(message);
+        this._showWhichMessage = function () {
+          var _tdata = $('<td class="font-fixed"><b>' + _whichMessage + '</b> :' + type + '</td>');
+          _trow.append( _tdata );
+        };
 
-				if (_metadata) {
-					this._showJSON(_metadata);
-				}
+        this._showJSON = function (message) {
+          var msg = JSON.stringify(message, null, 4);
+          var _tdata = $('<td class="font-fixed">' + msg + '</td>');
+          _trow.append(_tdata);
+        };
 
-				return _whichMessage;
-			}
-		}
-	};
+        if (message.metadata) {
+          _metadata = message.metadata;
+          message = message.payload;
+          channel = _metadata.channel;
+        };
 
-	var SetupSubscribeForm = function (client, activityLogger) {
-		var self = this
-			,	_whichSubscription = 0
-			,	_subscribeForm = $('form#subscribe');
+        _tr = this._logRow();
+        this._showChannel(channel);
+        this._showWhichMessage();
+        this._showJSON(message);
 
-		this._onSubscribe = function(evt) {
-			evt.preventDefault();
-			var self = this
-				, subscriptionTable = $('#subscriptions table tbody')
-				,	channel = $('#subscribe #subscribe-channel').val();
+        if (_metadata) {
+          this._showJSON(_metadata);
+        }
 
-			_whichSubscription += 1;
+        return _whichMessage;
+      }
+    }
+  };
 
-			this._subscribeCallback = function (message) {
-				activityLogger._showMessage(message, 'incoming', channel);
-			};
+  var SetupSubscribeForm = function (client, activityLogger) {
+    var self = this
+      , _whichSubscription = 0
+      , _subscribeForm = $('form#subscribe');
 
-			var subscription = client.subscribe(channel, self._subscribeCallback);
+    this._onSubscribe = function(evt) {
+      evt.preventDefault();
+      var self = this
+        , subscriptionTable = $('#subscriptions table tbody')
+        , channel = $('#subscribe #subscribe-channel').val();
 
-			this._cancelForm = function (tr) {
-				var self = this
-				  , _form = $('<form>', {id:'cancel'})
-				  , _button = $('<input>').attr({
-				                'type': 'submit',
-				                'value': 'cancel'
-				              }).addClass('cancel');
+      _whichSubscription += 1;
+
+      this._subscribeCallback = function (message) {
+        activityLogger._showMessage(message, 'incoming', channel);
+      };
+
+      var subscription = client.subscribe(channel, self._subscribeCallback);
+
+      this._cancelForm = function (tr) {
+        var self = this
+          , _form = $('<form>', {id:'cancel'})
+          , _button = $('<input>').attr({ 'type': 'submit', 'value': 'cancel' }).addClass('cancel');
 
         _form.append(_button);
 
-				this._cancel = function (subscription, tr) {
-					return function(evt) {
-						evt.preventDefault();
-						subscription.cancel();
-						tr.hide();
-					}
-				};
+        this._cancel = function (subscription, tr) {
+          return function(evt) {
+            evt.preventDefault();
+            subscription.cancel();
+            tr.hide();
+          }
+        };
 
-				_form.submit(function () {
-					self._cancel(subscription, tr);
-				});
+        _form.submit(function () {
+          self._cancel(subscription, tr);
+        });
 
-				return _form
-			};
-
-			this._subscriptionTR = function () {
-				var _tr = $('<tr data-subscribe="true">');
-				subscriptionTable.append(_tr);
-				return _tr
-			};
-
-			var tableRow = this._subscriptionTR();
-			var tableForm = this._cancelForm( tableRow );
-			
-			this._cell = [
-					$('<td id="subscription_'+ _whichSubscription+'">' + _whichSubscription + '</td>')
-				,	$('<td>' + channel + '</td>')
-				, $('<td>').append(tableForm)
-			];
-
-			$.each(this._cell, function(i, element) {
-				tableRow.append(element);
-			});
-		}
-
-		return _subscribeForm.submit(self._onSubscribe);
-	};
-
-	var Publish = function (client, activityLogger) {
-		var selfish = null
-			,	_channel = $('#form-publish #channel')
-			,	_form = $('#form-publish')
-			,	_whichMessage;
-
-		_form.submit(function (evt) {
-			evt.preventDefault();
-			
-			var message = self._getInput();
-				
-			if (message != null) {
-			  var channel = _channel.val();				
-				_whichMessage = activityLogger._showMessage(message, 'outgoing', channel);
-				client.publish(channel, message);
-				Notification.init('Passed');
-			} else {
-				Notification.init('Bad JSON');
-			}
-
-			return false;
-		});
-
-		return self = {
-			_getInput : function (data) {
-				var data = $('#form-publish #data').val();
-				try {
-					return JSON.parse(data)
-				}
-				catch(error) {
-					return null;
-				}
-			},
-
-			_setInput : function (data) {
-				return $('#publish #data').val(data);
-			}	
-		};
-	};
+        return _form
+      };
 
 
-	var Dashboard = function () {
-		var _port = 3000
-			,	_connection = $('#connection')
-			, _msg = '';
+      this._subscriptionTR = function () {
+        var _tr = $('<tr data-subscribe="true">');\
+        subscriptionTable.append(_tr);
+        return _tr
+      };
 
-		try {
-			var _url = 'http://localhost:'+  _port +'/bayeux';
-			var _client = new Faye.Client( _url, { timeout:130 });
-			_connection.html('Faye running on: ' +  _url + '<br />');
-		} 
-		catch(error) {
-			alert('Faye\'s not running');
-			throw(error);
-		}
+      var tableRow = this._subscriptionTR();
+      var tableForm = this._cancelForm( tableRow );
 
-		var activityLogger = ActivityLog();
+      this._cell = [
+          $('<td id="subscription_'+ _whichSubscription+'">' + _whichSubscription + '</td>')
+        , $('<td>' + channel + '</td>')
+        , $('<td>').append(tableForm)
+      ];
 
-		this.incomingHandler = function(message, callback) {
-			var self = this
-			  , metadata = {};
-			
-			if (message.channel == '/meta/connect') {
-				 _msg = 'Connection Status : ' + message.successful;
-				 _connection.html( _msg );
-				return callback(message);
-			}
+      $.each(this._cell, function(i, element) {
+        tableRow.append(element);
+        });
+    }
 
-			else if (message.channel.match(/\/meta.*/)) {
-				return callback(message);
-			}
+    return _subscribeForm.submit(self._onSubscribe);
+  };
 
-			else {
-				if (message.data) {
-					for (var key in message) {
-						if (key != 'data') {
-						 metadata[key] = message[key];						  
-						}
-					}
+  var Publish = function (client, activityLogger) {
+    var selfish = null
+      , _channel = $('#form-publish #channel')
+      , _form = $('#form-publish')
+      , _whichMessage;
 
-					message.data = {
-							payload: message.data
-						,	metadata:  metadata
-					};
+    _form.submit(function (evt) {
+      evt.preventDefault();
+      var message = self._getInput();
 
-					return callback(message);				
-				}
-			};		
-		};
+      if (message != null) {
+        var channel = _channel.val();
+        _whichMessage = activityLogger._showMessage(message, 'outgoing', channel);
+        client.publish(channel, message);
+        Notification.init('Passed');
+      } else {
+        Notification.init('Bad JSON');
+      }
 
-		_client.addExtension({ incoming: this.incomingHandler });
+      return false;
+    });
 
-		var publisher = Publish(  _client, activityLogger );
-		publisher._setInput('{}');	
+    return self = {
+      _getInput : function (data) {
+        var data = $('#form-publish #data').val();
+        try {
+          return JSON.parse(data)
+        }
+        catch(error) {
+          return null;
+        }
+      },
+      _setInput : function (data) {
+        return $('#publish #data').val(data);
+      }
+    };
+  };
 
-		return SetupSubscribeForm( _client, activityLogger);
+  var Dashboard = function () {
+    var _port = 3000
+      , _connection = $('#connection')
+      , _msg = ''
+      , _publisher = null
+      , activityLogger = ActivityLog();
 
-	};
-	
-	var Notification = {
-	    el: $('#notification')
-	  , init: function(message) {
-	    var self = this;
-	    message !== '' ? self.show(message) : self.hide()
-	  }
-	  , show: function(message) {
-	    var self = this;
-	    if (message !== 'Bad JSON') {
-	      return self.el.html(message)
-	        .slideDown('fast')
-	        .delay(1800)
-	        .slideUp('fast')
-	        .addClass('passed');
-	    } else {
-	      return self.el.html(message)
-	        .slideDown('fast')
-	        .delay(1800)
-	        .slideUp('fast')
-	        .removeClass('passed');	      
-	    }
-	  }
-	  , hide: function() {
-	    return this.el.hide();
-	  }
-	};
+    try {
+      var _url = 'http://localhost:'+  _port +'/bayeux';
+      var _client = new Faye.Client( _url, { timeout:130 });
+      _connection.html('Faye running on: ' +  _url + '<br />');
+    }
+    catch(error) {
+      alert('Faye\'s not running');
+      throw(error);
+    }
 
-	(function ($) { Dashboard(); Notification.init('') })(jQuery);
-	
+    this.incomingHandler = function(message, callback) {
+      var self = this
+        , metadata = {};
+
+      if (message.channel == '/meta/connect') {\
+        _msg = 'Connection Status : ' + message.successful;
+        _connection.html( _msg );
+        return callback(message);
+      } else if (message.channel.match(/\/meta.*/)) {
+        return callback(message);
+      } else {
+        if (message.data) {
+          for (var key in message) {
+            if (key != 'data') {
+              metadata[key] = message[key];
+            }
+          }
+
+          message.data = {
+              payload: message.data
+            ,	metadata:  metadata
+          };
+
+          return callback(message);
+        }
+      };
+    };
+
+    _client.addExtension({ incoming: this.incomingHandler });
+    _publisher = Publish(  _client, activityLogger );
+    _publisher._setInput('{}');
+
+    return SetupSubscribeForm( _client, activityLogger);
+  };
+
+  var Notification = {
+    el: $('#notification'),
+
+    init: function(message) {
+      var self = this;
+      message !== '' ? self.show(message) : self.hide()
+    },
+
+    show: function(message) {
+      var self = this;
+      if (message !== 'Bad JSON') {
+        return self.el.html(message)
+          .slideDown('fast')
+          .delay(1800)
+          .slideUp('fast')
+          .addClass('passed');
+      } else {
+        return self.el.html(message)
+          .slideDown('fast')
+          .delay(1800)
+          .slideUp('fast')
+          .removeClass('passed');
+      }
+    },
+
+    hide: function() {
+      return this.el.hide();
+    }
+  };
+
+  (function ($) { Dashboard(); Notification.init('') })(jQuery);
+
 }).call(this);

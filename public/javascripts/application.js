@@ -29,9 +29,9 @@ Application = {
 	},
   
 	elements : {
-			time: '#time'
-		,	timeContainter: '#time-container'
-		,	key: '#enter-key'
+		  time: '#time'
+		, timeContainter: '#time-container'
+		, key: '#enter-key'
 	},
 	
 	launch: function () {
@@ -55,11 +55,7 @@ Application = {
 	
 	accept: function(message) {
 	  var self = this
-	    , content = $('<li>', { 
-		    							html: '<img src="'+ message.avatar +'"/>' +
-		    										'<span>' + message.user + '</span>' + 
-		    										message.message 
-		    					});
+	    , content = $('<li>', { html: '<img src="'+ message.avatar +'"/><span>' + message.user + '</span>' + message.message });
 	 
 		self._stream.append( content );
 	},
@@ -80,11 +76,11 @@ Application = {
 	    if (word !== self._nickname) mentions.push(word);
 	  });  
 	  	  
-	  message = { 
-		  	user: this._username
-		  , message: message
-		  , avatar: 'http://robohash.org/'+ this._username +'.png/?set=set3&size=32x32' 
-		};
+	  message = {
+          user: this._username
+        , message: message
+        , avatar: 'http://robohash.org/'+ this._username +'.png/?set=set3&size=32x32'
+      };
 
 	  this._bayeux.publish('/chat/' + this._channel, message);
 	  $.each(mentions, function(i, name) {
@@ -102,11 +98,11 @@ Application = {
 	  if (defaultSize < dataSize + 1) {
 	    return Application._msgbox.animate({
   	      height: (lineHeight * 5) + 'px'
-  	  }, 1000, 'linear');  
+  	   }, 1000, 'linear');
 	  } else {
 	    return Application._msgbox.animate({
   	      height: dataSize + 'px'
-  	  }, 800, 'linear');
+  	   }, 800, 'linear');
 	  }
 	}
 	
