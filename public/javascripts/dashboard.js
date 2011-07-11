@@ -93,7 +93,7 @@
 
 
       this._subscriptionTR = function () {
-        var _tr = $('<tr data-subscribe="true">');\
+        var _tr = $('<tr data-subscribe="true">');
         subscriptionTable.append(_tr);
         return _tr
       };
@@ -174,7 +174,7 @@
       var self = this
         , metadata = {};
 
-      if (message.channel == '/meta/connect') {\
+      if (message.channel == '/meta/connect') {
         _msg = 'Connection Status : ' + message.successful;
         _connection.html( _msg );
         return callback(message);
