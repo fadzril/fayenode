@@ -48,4 +48,10 @@ div#log
     tbody
       
 
+script(type='text/javascript', src='/javascripts/logger.js')
+script(type='text/javascript', src='/javascripts/notification.js')
+script(type='text/javascript', src='/javascripts/publish.js')
+script(type='text/javascript', src='/javascripts/subscriber.js')
 script(type='text/javascript', src='/javascripts/dashboard.js')
+script
+  (function ($) { Dashboard.init(); Notification.init('') })(jQuery);
