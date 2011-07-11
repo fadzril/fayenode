@@ -1,0 +1,51 @@
+div#notification
+div#content
+  div#connection
+  div#subscriber
+    form#subscribe
+      h3 Subscribe
+      ul
+        li
+          label Subscribe to channel
+          input(type='text', id='subscribe-channel', value='/some_channel')
+        li
+          input(type='submit', id='submit')
+    div#subscriptions
+      h3 Subscriptions
+      table
+        thead
+          tr
+            th(width=50) Sequence
+            th Channel
+            th(width=50) Action
+        tbody
+          
+  div#publish
+    h3 Publish
+    form#form-publish
+      ul
+        li
+          label Channel
+          input(type='text', id='channel', value='/some_channel')
+        li
+          label Input/Data
+          textarea(id='data', rows='15')
+        li
+          input(type='submit', id='submit')
+  
+  div#error
+
+  
+div#log
+  h3#logger Logger
+  table#log
+    thead
+      tr
+        th(width=100) Channel
+        th(width=100) in/out
+        th Payload
+        th(width=250) Out of band data
+    tbody
+      
+
+script(type='text/javascript', src='/javascripts/dashboard.js')

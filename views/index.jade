@@ -1,0 +1,34 @@
+div#header
+  h1 Welcome to #{title}
+  
+div#container
+  div#fader  
+    div#user-form
+      form#user(multipart='true', id='user-key')
+        label NickName
+        input(type='text', id='user-nick')
+        label Channel
+        input(type='text', id='user-channel')
+        input(type='submit', value="Enter")
+  
+  div#main
+    div#time-container
+      span#time
+    div#timeline
+      ul#streams
+      
+div#user-message
+  span#resize Resize
+  form.message#post
+    textarea(id="message")
+    input(type="submit", value="Send Message")
+    
+script(type='text/javascript', src='/javascripts/application.js')
+script
+  var host = location.hostname
+    , port = location.port
+    , path = '/bayeux';
+
+  Bayeux = new Faye.Client('http://localhost:3000/bayeux', { timeout: 130 });
+  Application.init(Bayeux);
+    
