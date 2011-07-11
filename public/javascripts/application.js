@@ -7,6 +7,7 @@ Application = {
 	init: function (bayeux) {
 		var self = this;
 		this._bayeux = bayeux;
+		this._window = $(window);
 		this._body = $('body');
 		this._title = $('#header h1');
 		this._form = $('#user-form');
@@ -18,21 +19,34 @@ Application = {
 		this._msgbox = $('#message');
 		this._timer = $('#time');
 		this._avatar = $('<img/>');
-		this._timerPlaceholder = $('#time-container')
-		
+		this._timerPlaceholder = $('#time-container');
+
 		this._form.submit(function (e) {
 		  self._username = $('#user-nick').val();
 		  self._channel = $('#user-channel').val();
-			self.launch();
-			e.preventDefault();
+		  self.launch();
+		  e.preventDefault();
 		});
-		
+
+		this._window.bind('resize', function() {
+			self.centerPosition(self._form);
+		});
+
+		this._window.trigger('resize');
 	},
   
 	elements : {
 		  time: '#time'
 		, timeContainter: '#time-container'
 		, key: '#enter-key'
+	},
+
+	centerPosition: function(element) {
+		var self = this, el = $(element), win = $(window);
+		return el.css({
+			 'top': (win.height() - el.innerHeight()) / 2.3
+			,'left': (win.width() - el.innerWidth()) / 2
+		});
 	},
 	
 	launch: function () {
