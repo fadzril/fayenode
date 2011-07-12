@@ -84,7 +84,7 @@ bayeux.addExtension(serverAuth);
 /*******************************************
  * Routes
  ******************************************/
-var port = process.env.port || 3000;
+var port = process.env.port || 8080;
 
 app.get('/', function(req, res){
   res.render('index', {
