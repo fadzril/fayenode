@@ -51,12 +51,6 @@ app.configure('production', function(){
 var bayeux = new faye.NodeAdapter({
     mount: '/bayeux'
   , timeout: 130
-  , engine: {
-      type: 'redis'
-    , host: '127.0.0.1'
-    , port: '6379'
-    , namespace: '/fm'
-  }
 });
 
 bayeux.attach(app);
