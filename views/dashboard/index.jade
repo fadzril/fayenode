@@ -54,5 +54,8 @@ script(type='text/javascript', src='/javascripts/publish.js')
 script(type='text/javascript', src='/javascripts/subscriber.js')
 script(type='text/javascript', src='/javascripts/dashboard.js')
 script
-  var port = #{port};
-  (function ($) { Dashboard.init(port); Notification.init('') })(jQuery);
+  var host = location.hostname
+    , port = #{port}
+    , path = '/bayeux';
+
+  (function ($) { Dashboard.init(host, port, path); Notification.init('') })(jQuery);
