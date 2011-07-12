@@ -13,20 +13,21 @@ var Subscriber = {
     this.logger = logger;
     this.channel = Subscriber.el.channel.val();
     this.subscription = client.subscribe(self.channel, self.subscribeCallbackHandler);
-
     return self.el.form.submit(self.subscribeEventHandler);
   },
 
   subscribeEventHandler: function(e) {
     e.preventDefault();
     var self = Subscriber
+      , channel = Subscriber.el.channel.val()
       , tableRow = self.subscribeRow()
       , tableForm = self.createCancelForm(tableRow);
 
     self.whichSubscription += 1;
+    self.setPublishValue(channel);
     self.cell = [
         $('<td id="subscription_'+ self.whichSubscription+'">' + self.whichSubscription + '</td>')
-      , $('<td>' + self.channel + '</td>')
+      , $('<td>' + channel + '</td>')
       , $('<td>').append(tableForm)
     ];
 
@@ -43,6 +44,10 @@ var Subscriber = {
     var tr = $('<tr>');
     this.el.table.append(tr);
     return tr;
+  },
+
+  setPublishValue: function(channel) {
+    return Publish.el.channel.val(channel);
   },
 
   createCancelForm: function(tr) {

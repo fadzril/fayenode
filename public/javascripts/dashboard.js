@@ -3,7 +3,7 @@ var Dashboard = {
     'connection': $('#connection')
   },
 
-  init: function(location, path) {
+  init: function(port) {
     this.port = port;
     this.msg = '';
     this.logger = Logger;
@@ -11,7 +11,7 @@ var Dashboard = {
     this.subscriber = Subscriber;
 
     try {
-      this.url = location + path;
+      this.url = window.location.hostname + ':3000/bayeux';
       this.client = new Faye.Client(this.url, { timeout: 120 });
       this.el.connection.html('Faye running on:' + this.url);
     } catch (error) {
