@@ -84,12 +84,13 @@ bayeux.addExtension(serverAuth);
 /*******************************************
  * Routes
  ******************************************/
-var port = 3000;
+var port = 80 || process.env.PORT;
 
 app.get('/', function(req, res){
   res.render('index', {
       title: 'Faye Chatter'
     , port: port
+    , path: process.env.PATH
   });
 });
 
