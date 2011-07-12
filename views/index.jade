@@ -29,6 +29,6 @@ script
     , port = #{port}
     , path = '/bayeux';
 
-  Bayeux = new Faye.Client(host +':'+ port + path, { timeout: 130 });
+  Bayeux = new Faye.Client(host + path, { timeout: 130 });
   Application.init(Bayeux);
     
