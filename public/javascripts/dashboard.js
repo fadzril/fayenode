@@ -3,8 +3,8 @@ var Dashboard = {
     'connection': $('#connection')
   },
 
-  init: function() {
-    this.port = 3000;
+  init: function(port) {
+    this.port = port;
     this.msg = '';
     this.logger = Logger;
     this.publisher = Publish;

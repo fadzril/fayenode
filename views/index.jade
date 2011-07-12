@@ -26,9 +26,9 @@ div#user-message
 script(type='text/javascript', src='/javascripts/application.js')
 script
   var host = location.hostname
-    , port = location.port
+    , port = #{port}
     , path = '/bayeux';
 
-  Bayeux = new Faye.Client('http://localhost:3000/bayeux', { timeout: 130 });
+  Bayeux = new Faye.Client('http://localhost:'+ port +'/bayeux', { timeout: 130 });
   Application.init(Bayeux);
     

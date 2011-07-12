@@ -90,17 +90,23 @@ bayeux.addExtension(serverAuth);
 /*******************************************
  * Routes
  ******************************************/
+var port = process.env.port || 3000;
+
 app.get('/', function(req, res){
   res.render('index', {
-    title: 'Faye Chatter'
+      title: 'Faye Chatter'
+    , port: port
   });
 });
 
 app.get('/dashboard', function(req, res) {
-  res.render('dashboard/index');
+  res.render('dashboard/index', {
+    port: port
+  });
 });
 
+
 if (!module.parent) {
-  app.listen(3000);
+  app.listen(port);
   console.log("Express server listening on port %d", app.address().port);
 }

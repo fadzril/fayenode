@@ -54,4 +54,5 @@ script(type='text/javascript', src='/javascripts/publish.js')
 script(type='text/javascript', src='/javascripts/subscriber.js')
 script(type='text/javascript', src='/javascripts/dashboard.js')
 script
-  (function ($) { Dashboard.init(); Notification.init('') })(jQuery);
+  var port = #{port};
+  (function ($) { Dashboard.init(port); Notification.init('') })(jQuery);
