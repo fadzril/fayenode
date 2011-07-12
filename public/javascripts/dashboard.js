@@ -11,7 +11,7 @@ var Dashboard = {
     this.subscriber = Subscriber;
 
     try {
-      this.url = window.location.hostname + ':80/bayeux';
+      this.url = window.location.hostname + '/bayeux';
       this.client = new Faye.Client(this.url, { timeout: 120 });
       this.el.connection.html('Faye running on:' + this.url);
     } catch (error) {
